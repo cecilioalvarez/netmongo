@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using MongoEjemplo.Models;
 
 namespace MongoEjemplo.Controllers;
@@ -9,25 +12,22 @@ public class ClientesController : ControllerBase
 {
 
     private readonly ILogger<ClientesController> _logger;
+     private readonly IMongoCollection<Clientes> clientesMongo;
 
-    public ClientesController(ILogger<ClientesController> logger)
+    public ClientesController(ILogger<ClientesController> logger,IOptions<MongoDBSettings>  mongoDBSettings)
     {
         _logger = logger;
+        MongoClient client = new MongoClient(mongoDBSettings.Value.ConnectionURI);
+        IMongoDatabase database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
+        clientesMongo = database.GetCollection<Clientes>(mongoDBSettings.Value.CollectionName);
+
     }
 
     [HttpGet(Name = "Clientes")]
     public IEnumerable<Clientes> Get()
     {
-        List<Clientes> lista= new List<Clientes>();
-        Clientes c1= new Clientes();
-        c1.Dni="1";
-        c1.Nombre="pedro";
-        c1.Apellidos="gomez";
-        c1.Edad=20;
 
-
-        lista.Add(c1);
-        return lista;
+       return clientesMongo.Find(new BsonDocument()).ToList();
 
 
     }

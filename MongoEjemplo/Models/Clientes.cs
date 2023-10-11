@@ -8,8 +8,8 @@ public class Clientes
 {
 
     [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; }
+    //[BsonRepresentation(BsonType.ObjectId)]
+    public int  Id { get; set; }
     [BsonElement("dni")]
     public string Dni { get; set; } = null!;
     [BsonElement("nombre")]
